@@ -135,55 +135,55 @@ def uniswap(privatekey,w3,amount):
     data = uniswap.encodeABI(fn_name='exactInputSingle',
                              args=[(weth, token, 500, address, amount_eth, int(amount_dec*0.99), 0)])
     nonce = w3.eth.get_transaction_count(address)
-    try:
-        while True:
-            tx = uniswap.functions.multicall(
-                timestamp,
-                [data]
-            ).build_transaction(
-                {
-                    'from': address,
-                    'nonce': nonce,
-                    'value': amount_eth,
-                    'gas': uniswap.functions.multicall(
-                        timestamp,
-                        [data]
-                    ).estimate_gas(
-                        {
-                            'from': address,
-                            'nonce': nonce,
-                            'value': amount_eth
-                        }
-                    ),
-                    'gasPrice': w3.eth.gas_price
-                }
-            )
-            sign = account.sign_transaction(tx)
-            hash = w3.eth.send_raw_transaction(sign.rawTransaction)
+    while True:
+        try:
+            while True:
+                tx = uniswap.functions.multicall(
+                    timestamp,
+                    [data]
+                ).build_transaction(
+                    {
+                        'from': address,
+                        'nonce': nonce,
+                        'value': amount_eth,
+                        'gas': uniswap.functions.multicall(
+                            timestamp,
+                            [data]
+                        ).estimate_gas(
+                            {
+                                'from': address,
+                                'nonce': nonce,
+                                'value': amount_eth
+                            }
+                        ),
+                        'gasPrice': w3.eth.gas_price
+                    }
+                )
+                sign = account.sign_transaction(tx)
+                hash = w3.eth.send_raw_transaction(sign.rawTransaction)
 
-            logger.info(f'{address} - покупаю {amount} usdc на Uniswap...')
+                logger.info(f'{address} - покупаю {amount} usdc на Uniswap...')
 
-            status = check_status_tx(hash, address, w3)
-            sleep_indicator(5)
+                status = check_status_tx(hash, address, w3)
+                sleep_indicator(5)
 
-            if status == 1:
-                logger.success(f'{address} - купил {amount} usdc : https://optimistic.etherscan.io/tx/{w3.to_hex(hash)} на Uniswap...')
+                if status == 1:
+                    logger.success(f'{address} - купил {amount} usdc : https://optimistic.etherscan.io/tx/{w3.to_hex(hash)} на Uniswap...')
 
 
-                sleep_indicator(random.randint(1, 25))
+                    sleep_indicator(random.randint(1, 25))
+                    break
+                else:
+                    logger.info(f'{address} - транза неуспешна : https://optimistic.etherscan.io/tx/{w3.to_hex(hash)}...')
+            break
+        except Exception as e:
+            error_message = str(e)
+            if "insufficient funds for gas * price + value" in error_message:
+                logger.error(f'{address} - нет баланса eth...')
                 break
             else:
-                logger.info(f'{address} - транза неуспешна : https://optimistic.etherscan.io/tx/{w3.to_hex(hash)}...')
-
-    except Exception as e:
-        error_message = str(e)
-        if "insufficient funds for gas * price + value" in error_message:
-            logger.error(f'{address} - нет баланса eth...')
-            break
-        else:
-
-            logger.error(f'{address} - {e}...')
-        t.sleep(2)
+                logger.error(f'{address} - {e}...')
+                t.sleep(2)
 
 def send_and_get(privatekey, amount,delay):
     w3 = Web3(Web3.HTTPProvider('https://optimism.publicnode.com'))
