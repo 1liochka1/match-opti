@@ -193,7 +193,7 @@ def send_and_get(privatekey, amount,delay):
     to = Web3.to_checksum_address('0x789d425a45557a9743029f937a3ba9aac0827008')
     while True:
         balance = check_balance(w3,usdc,address)
-        if balance>int(amount*10**6):
+        if balance>int(amount*10**6*0.9):
             approve_token(w3,account,address,usdc,to,int(amount*10**6))
             logger.info(f'{address} - начинаю отправку {amount} usdc...')
             try:
