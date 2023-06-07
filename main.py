@@ -179,6 +179,7 @@ def uniswap(privatekey,w3,amount):
         error_message = str(e)
         if "insufficient funds for gas * price + value" in error_message:
             logger.error(f'{address} - нет баланса eth...')
+            break
         else:
 
             logger.error(f'{address} - {e}...')
