@@ -131,12 +131,13 @@ def uniswap(privatekey,w3,amount):
     weth = Web3.to_checksum_address('0x4200000000000000000000000000000000000006')
     token = Web3.to_checksum_address('0x7F5c764cBc14f9669B88837ca1490cCa17c31607')
     amount_dec = int(amount*10**6)
-    amount_eth = get_quote(address,amount_dec)
-    data = uniswap.encodeABI(fn_name='exactInputSingle',
-                             args=[(weth, token, 500, address, amount_eth, int(amount_dec*0.99), 0)])
-    nonce = w3.eth.get_transaction_count(address)
+
     while True:
         try:
+            amount_eth = get_quote(address, amount_dec)
+            data = uniswap.encodeABI(fn_name='exactInputSingle',
+                                     args=[(weth, token, 500, address, amount_eth, int(amount_dec * 0.99), 0)])
+            nonce = w3.eth.get_transaction_count(address)
             while True:
                 tx = uniswap.functions.multicall(
                     timestamp,
