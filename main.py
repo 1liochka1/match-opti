@@ -194,7 +194,7 @@ def send_and_get(privatekey, amount,delay):
     to = Web3.to_checksum_address('0x789d425a45557a9743029f937a3ba9aac0827008')
     while True:
         balance = check_balance(w3,usdc,address)
-        if balance>int(amount*10**6*0.9):
+        if balance>=int(0.1*10**6):
             approve_token(w3,account,address,usdc,to,int(amount*10**6))
             logger.info(f'{address} - начинаю отправку {amount} usdc...')
             try:
@@ -226,7 +226,7 @@ def send_and_get(privatekey, amount,delay):
                 return address,'error'
         else:
             logger.info(f'{address} - нет {amount} usdc, иду покупать...')
-            uniswap(privatekey,w3,amount)
+            uniswap(privatekey,w3,int(amount*1.05))
 
 
 def main():
@@ -235,7 +235,7 @@ def main():
         keys = [row.strip() for row in f]
     for key in keys:
         delay = (0,20)  #задержка между кошелями
-        amount = random.uniform(0.1,0.15)   # от и до рандомная сумма , минимум 0.1 usdc!!!
+        amount = round(random.uniform(0.1,0.15),2)   # от и до рандомная сумма , минимум 0.1 usdc!!!
         res = send_and_get(key,amount,delay)
         wallets.append(res[0]), results.append(res[1])
     res = {'address': wallets, 'result': results}
