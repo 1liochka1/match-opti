@@ -233,6 +233,7 @@ def send_and_get(privatekey, amount,delay):
             uniswap(privatekey,w3,amount*1.05)
 
 
+
 def main():
     print(f'\n{" "*32}автор - https://t.me/iliocka{" "*32}\n')
     with open("keys.txt", "r") as f:
