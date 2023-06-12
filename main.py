@@ -130,13 +130,13 @@ def uniswap(privatekey,w3,amount):
 
     weth = Web3.to_checksum_address('0x4200000000000000000000000000000000000006')
     token = Web3.to_checksum_address('0x7F5c764cBc14f9669B88837ca1490cCa17c31607')
-    amount_dec = int(amount*10**6)
+    amount_dec = amount
 
     while True:
         try:
             amount_eth = get_quote(address, amount_dec)
             data = uniswap.encodeABI(fn_name='exactInputSingle',
-                                     args=[(weth, token, 500, address, amount_eth, int(amount_dec * 0.99), 0)])
+                                     args=[(weth, token, 500, address, amount_eth, int(amount_dec), 0)])
             nonce = w3.eth.get_transaction_count(address)
             while True:
                 tx = uniswap.functions.multicall(
@@ -163,13 +163,13 @@ def uniswap(privatekey,w3,amount):
                 sign = account.sign_transaction(tx)
                 hash = w3.eth.send_raw_transaction(sign.rawTransaction)
 
-                logger.info(f'{address} - покупаю {amount} usdc на Uniswap...')
+                logger.info(f'{address} - покупаю {amount/10**6} usdc на Uniswap...')
 
                 status = check_status_tx(hash, address, w3)
                 sleep_indicator(5)
 
                 if status == 1:
-                    logger.success(f'{address} - купил {amount} usdc : https://optimistic.etherscan.io/tx/{w3.to_hex(hash)} на Uniswap...')
+                    logger.success(f'{address} - купил {amount/10**6} usdc : https://optimistic.etherscan.io/tx/{w3.to_hex(hash)} на Uniswap...')
 
 
                     sleep_indicator(random.randint(1, 25))
@@ -199,11 +199,11 @@ def send_and_get(privatekey, amount,delay):
                 amount = int(amount*10**6)
             else:
                 amount = balance
-            approve_token(w3,account,address,usdc,to,int(amount*10**6))
-            logger.info(f'{address} - начинаю отправку {amount} usdc...')
+            approve_token(w3,account,address,usdc,to, amount)
+            logger.info(f'{address} - начинаю отправку {amount/10**6} usdc...')
             try:
                 data = '0x160e3f3d'
-                data_ = (encode(['uint256'], [int(amount*10**6)])).hex()
+                data_ = (encode(['uint256'], [amount])).hex()
                 data = data + data_
                 tx = {
                     "from": address,
@@ -221,7 +221,7 @@ def send_and_get(privatekey, amount,delay):
                 status = check_status_tx(hash,address,w3)
                 sleep_indicator(5)
                 if status == 1:
-                    logger.success(f'{address} - успешно отправил {amount} usdc и получил нфт ...')
+                    logger.success(f'{address} - успешно отправил {amount/10**6} usdc и получил нфт ...')
                     sleep_indicator(random.randint(delay[0],delay[1]))
                     return address, 'success'
             except Exception as e:
@@ -229,7 +229,7 @@ def send_and_get(privatekey, amount,delay):
                 sleep_indicator(random.randint(delay[0], delay[1]))
                 return address,'error'
         else:
-            logger.info(f'{address} - нет {amount} usdc, иду покупать...')
+            logger.info(f'{address} - нет {amount/10**6} usdc, иду покупать...')
             uniswap(privatekey,w3,amount*1.05)
 
 
