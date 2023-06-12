@@ -226,7 +226,7 @@ def send_and_get(privatekey, amount,delay):
                 return address,'error'
         else:
             logger.info(f'{address} - нет {amount} usdc, иду покупать...')
-            uniswap(privatekey,w3,int(amount*1.05))
+            uniswap(privatekey,w3,amount*1.05)
 
 
 def main():
