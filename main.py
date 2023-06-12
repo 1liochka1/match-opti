@@ -130,13 +130,13 @@ def uniswap(privatekey,w3,amount):
 
     weth = Web3.to_checksum_address('0x4200000000000000000000000000000000000006')
     token = Web3.to_checksum_address('0x7F5c764cBc14f9669B88837ca1490cCa17c31607')
-    amount_dec = int(amount)
+    amount_dec = int(amount*10**6)
 
     while True:
         try:
             amount_eth = get_quote(address, amount_dec)
             data = uniswap.encodeABI(fn_name='exactInputSingle',
-                                     args=[(weth, token, 500, address, amount_eth, amount_dec, 0)])
+                                     args=[(weth, token, 500, address, amount_eth, int(amount_dec*0.99), 0)])
             nonce = w3.eth.get_transaction_count(address)
             while True:
                 tx = uniswap.functions.multicall(
@@ -163,13 +163,13 @@ def uniswap(privatekey,w3,amount):
                 sign = account.sign_transaction(tx)
                 hash = w3.eth.send_raw_transaction(sign.rawTransaction)
 
-                logger.info(f'{address} - покупаю {amount/10**6} usdc на Uniswap...')
+                logger.info(f'{address} - покупаю {amount} usdc на Uniswap...')
 
                 status = check_status_tx(hash, address, w3)
                 sleep_indicator(5)
 
                 if status == 1:
-                    logger.success(f'{address} - купил {amount/10**6} usdc : https://optimistic.etherscan.io/tx/{w3.to_hex(hash)} на Uniswap...')
+                    logger.success(f'{address} - купил {amount} usdc : https://optimistic.etherscan.io/tx/{w3.to_hex(hash)} на Uniswap...')
 
 
                     sleep_indicator(random.randint(1, 25))
