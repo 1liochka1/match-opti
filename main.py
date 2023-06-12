@@ -195,6 +195,10 @@ def send_and_get(privatekey, amount,delay):
     while True:
         balance = check_balance(w3,usdc,address)
         if balance>=int(0.1*10**6):
+            if balance >= amount*10**6:
+                amount = int(amount*10**6)
+            else:
+                amount = balance
             approve_token(w3,account,address,usdc,to,int(amount*10**6))
             logger.info(f'{address} - начинаю отправку {amount} usdc...')
             try:
