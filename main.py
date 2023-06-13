@@ -111,6 +111,7 @@ def get_quote(address,amount):
         response = requests.get('https://api.uniswap.org/v1/quote', params=params, headers=headers)
         if response.status_code == 200:
             res = json.loads(response.text)
+            print(res)
             return int(res['quote'])
     except Exception as e:
         logger.error(f'{address} - {e}')
@@ -186,55 +187,69 @@ def uniswap(privatekey,w3,amount):
                 logger.error(f'{address} - {e}...')
                 t.sleep(2)
 
+def check_nft(address):
+    w3 = Web3(Web3.HTTPProvider('https://optimism.publicnode.com'))
+    nft = Web3.to_checksum_address('0xE20cF4cffb6B5bD1353543dc273299C314A4B4E8')
+    abi = '[{"inputs":[{"internalType":"address","name":"punkContract","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"approved","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"operator","type":"address"},{"indexed":false,"internalType":"bool","name":"approved","type":"bool"}],"name":"ApprovalForAll","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"account","type":"address"}],"name":"Paused","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"address","name":"proxy","type":"address"}],"name":"ProxyRegistered","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"account","type":"address"}],"name":"Unpaused","type":"event"},{"constant":false,"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"approve","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"baseURI","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"punkIndex","type":"uint256"}],"name":"burn","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getApproved","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"operator","type":"address"}],"name":"isApprovedForAll","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"punkIndex","type":"uint256"}],"name":"mint","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ownerOf","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"pause","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"paused","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"proxyInfo","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"punkContract","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"registerProxy","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"renounceOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"safeTransferFrom","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"bytes","name":"_data","type":"bytes"}],"name":"safeTransferFrom","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"bool","name":"approved","type":"bool"}],"name":"setApprovalForAll","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"string","name":"baseUri","type":"string"}],"name":"setBaseURI","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"bytes4","name":"interfaceId","type":"bytes4"}],"name":"supportsInterface","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"tokenByIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"uint256","name":"index","type":"uint256"}],"name":"tokenOfOwnerByIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"tokenURI","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"transferFrom","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"unpause","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]'
+    contract = w3.eth.contract(address=nft,abi=abi)
+    id = contract.functions.balanceOf(address).call()
+    if id == 1:
+        logger.info(f'{address} на кошельке уже есть Optimism Grants NFT')
+        return False
+    else:
+        return True
 def send_and_get(privatekey, amount,delay):
     w3 = Web3(Web3.HTTPProvider('https://optimism.publicnode.com'))
     account = w3.eth.account.from_key(privatekey)
     address = account.address
     usdc = Web3.to_checksum_address('0x7F5c764cBc14f9669B88837ca1490cCa17c31607')
     to = Web3.to_checksum_address('0x789d425a45557a9743029f937a3ba9aac0827008')
-    while True:
-        balance = check_balance(w3,usdc,address)
-        if balance>=int(0.1*10**6):
-            if balance >= amount*10**6:
-                amount = int(amount*10**6)
+    id_ =  check_nft(address)
+    if id_:
+        while True:
+            balance = check_balance(w3,usdc,address)
+            if balance>=int(0.1*10**6):
+                if balance >= amount*10**6:
+                    amount = int(amount*10**6)
+                else:
+                    amount = balance
+                approve_token(w3,account,address,usdc,to, amount)
+                logger.info(f'{address} - начинаю отправку {amount/10**6} usdc...')
+                try:
+                    data = '0x160e3f3d'
+                    data_ = (encode(['uint256'], [amount])).hex()
+                    data = data + data_
+                    tx = {
+                        "from": address,
+                        "to": to,
+                        "value": 0,
+                        "nonce": w3.eth.get_transaction_count(address),
+                        "chainId": w3.eth.chain_id,
+                        "gasPrice": w3.eth.gas_price,
+                        "data": data,
+                    }
+                    gas = w3.eth.estimate_gas(tx)
+                    tx["gas"] = gas
+                    sign = account.sign_transaction(tx)
+                    hash = w3.eth.send_raw_transaction(sign.rawTransaction)
+                    status = check_status_tx(hash,address,w3)
+                    sleep_indicator(5)
+                    if status == 1:
+                        logger.success(f'{address} - успешно отправил {amount/10**6} usdc и получил нфт ...')
+                        sleep_indicator(random.randint(delay[0],delay[1]))
+                        return address, 'success'
+                except Exception as e:
+                    logger.error(f'{address} - {e}')
+                    sleep_indicator(random.randint(delay[0], delay[1]))
+                    return address,'error'
             else:
-                amount = balance
-            approve_token(w3,account,address,usdc,to, amount)
-            logger.info(f'{address} - начинаю отправку {amount/10**6} usdc...')
-            try:
-                data = '0x160e3f3d'
-                data_ = (encode(['uint256'], [amount])).hex()
-                data = data + data_
-                tx = {
-                    "from": address,
-                    "to": to,
-                    "value": 0,
-                    "nonce": w3.eth.get_transaction_count(address),
-                    "chainId": w3.eth.chain_id,
-                    "gasPrice": w3.eth.gas_price,
-                    "data": data,
-                }
-                gas = w3.eth.estimate_gas(tx)
-                tx["gas"] = gas
-                sign = account.sign_transaction(tx)
-                hash = w3.eth.send_raw_transaction(sign.rawTransaction)
-                status = check_status_tx(hash,address,w3)
-                sleep_indicator(5)
-                if status == 1:
-                    logger.success(f'{address} - успешно отправил {amount/10**6} usdc и получил нфт ...')
-                    sleep_indicator(random.randint(delay[0],delay[1]))
-                    return address, 'success'
-            except Exception as e:
-                logger.error(f'{address} - {e}')
-                sleep_indicator(random.randint(delay[0], delay[1]))
-                return address,'error'
-        else:
-            logger.info(f'{address} - нет {amount/10**6} usdc, иду покупать...')
-            uniswap(privatekey,w3,amount*1.05)
-
-
+                logger.info(f'{address} - нет {amount/10**6} usdc, иду покупать...')
+                uniswap(privatekey,w3,amount*1.05)
+    else:
+        return address,'already minted'
 
 def main():
+
     print(f'\n{" "*32}автор - https://t.me/iliocka{" "*32}\n')
     with open("keys.txt", "r") as f:
         keys = [row.strip() for row in f]
@@ -245,7 +260,7 @@ def main():
         wallets.append(res[0]), results.append(res[1])
     res = {'address': wallets, 'result': results}
     df = pd.DataFrame(res)
-    df.to_csv('results.csv', index=False)
+    df.to_csv('results.csv', mode='a',index=False)
     logger.success('Минетинг закончен...')
 
 if __name__ == '__main__':
